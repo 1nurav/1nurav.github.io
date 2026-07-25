@@ -68,6 +68,25 @@ function startReveals() {
     { rootMargin: '0px 0px -12% 0px' }
   );
   items.forEach((el) => io.observe(el));
+
+  /* Safety net. The negative bottom rootMargin pulls the trigger line ~12% up from
+     the foot of the viewport, so anything still below that line at maximum scroll
+     can never satisfy the observer and stays hidden forever. The contact pills
+     landed exactly there once the Work section was removed and the page got
+     shorter: top 761 in an 835 viewport against a trigger at 735. Reaching the end
+     of the document releases whatever is left, so nothing can be stranded. */
+  const flush = () => {
+    const atEnd =
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (!atEnd) return;
+    items.forEach((el) => {
+      el.classList.remove('is-hidden');
+      io.unobserve(el);
+    });
+    window.removeEventListener('scroll', flush);
+  };
+  window.addEventListener('scroll', flush, { passive: true });
+  flush();
 }
 
 function startAccentCycling() {
