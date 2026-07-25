@@ -268,6 +268,33 @@ function startSectorTiming() {
   return { update, layout, begin };
 }
 
+/* Loitering. Do nothing on the hero for twenty seconds and the stewards notice. It
+   re-arms on any input, and declines to fire once you have scrolled away, since
+   penalising someone for actually reading is the wrong joke. */
+function startPenalty() {
+  const box = $('[data-penalty]');
+  if (!box) return;
+  let idle;
+  let clear;
+
+  const arm = () => {
+    clearTimeout(idle);
+    clearTimeout(clear);
+    box.classList.remove('on');
+    idle = setTimeout(() => {
+      if (window.scrollY > window.innerHeight * 0.6) return arm();
+      box.textContent = 'stewards: 5 second time penalty. loitering.';
+      box.classList.add('on');
+      clear = setTimeout(() => box.classList.remove('on'), 4600);
+    }, 20000);
+  };
+
+  ['pointermove', 'pointerdown', 'keydown', 'scroll', 'wheel'].forEach((e) =>
+    window.addEventListener(e, arm, { passive: true })
+  );
+  arm();
+}
+
 function startMotion() {
   const ring = $('[data-cursor-ring]');
   const dot = $('[data-cursor-dot]');
@@ -437,6 +464,8 @@ export function init() {
   startAccentCycling();
   // Not motion, so it runs regardless of the reduced-motion preference.
   startCopyEmail();
+  // Not motion, so it runs regardless of the reduced-motion preference.
+  startPenalty();
   // Skipped when reduced, so nothing is ever left hidden waiting on a reveal.
   if (!reduced) startReveals();
   // Always run: the loop owns the timing strip, and decides internally whether
