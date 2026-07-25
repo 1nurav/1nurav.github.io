@@ -120,6 +120,11 @@ import { nav } from '../data/site.js';
   .links a { color: rgb(var(--fg-rgb) / 0.66); }
   .links a:hover { color: var(--acc); }
 
+  /* nav is space-between and now has three children (monogram, links, actions), so
+     the links were being distributed into the centre. Pushing them right regroups
+     them with the CTA and leaves the monogram alone on the left, as before. */
+  .links { margin-left: auto; }
+
   .actions {
     display: flex;
     align-items: center;
