@@ -13,7 +13,7 @@ export const meta = {
   // stats, so repeating it in the tab earns nothing and truncates sooner.
   title: 'Varun Babu',
   description:
-    'Team Lead. Seven years building software. I lead engineers, unblock them, and review the code and architecture.',
+    'Team Lead. Seven years in, eleven engineers, and the meeting cancelled on your behalf.',
 };
 
 export const profile = {
@@ -61,7 +61,7 @@ export const marquee = [
 
 export const stats = [
   { value: '7', label: 'years building software', accent: true },
-  { value: '4', label: 'companies, one craft' },
+  { value: '4', label: 'companies so far' },
   { value: 'SpeakUp', label: 'where I am now', small: true },
   // Headcount confirmed 11 as of Jul 2026. It also appears in bio[1], so change
   // both together. "no deploys on friday" moved to the marquee, which is why
@@ -97,7 +97,7 @@ export const experience = [
     period: 'Mar 2026 — now',
     duration: 'present',
     current: true,
-    note: 'Team Lead — unblocking people, reviewing code and architecture.',
+    note: 'Eleven engineers. Nobody is stuck for long.',
   },
   {
     company: 'Navex',
