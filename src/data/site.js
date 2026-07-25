@@ -22,13 +22,13 @@ export const profile = {
   role: 'Team Lead',
   email: 'varunnaidu307@gmail.com',
   intro:
-    'I lead engineers, remove whatever is in their way, and review the architecture before it becomes someone\'s 2am problem. The best days end with nobody stuck.',
+    'Good engineers don\'t need managing. They need the meeting cancelled, the decision made, and someone to go argue with the other team. That part I can do.',
   bio: [
-    'Seven years in, four companies deep. I started writing code at GlobalLogic in 2019 and somewhere along the way the interesting problems stopped being syntax and started being people, design decisions, and the gap between them.',
-    'Now I lead a team at SpeakUp. Day to day that means clearing blockers, reviewing code and architecture before it hardens into a migration, and making sure the people around me have room to do their best work — and get the credit for it.',
-    'I still read every design doc properly. It is the cheapest bug fix there is.',
+    'Seven years in, four companies deep. I started at GlobalLogic in 2019 writing code that worked, then code that worked at 2am, then eventually not much code at all. The interesting problems turned out to be people, design decisions, and the distance between the two.',
+    'Now I lead eleven engineers at SpeakUp. Day to day: unsticking people, reading design docs slowly enough to catch the part everyone skimmed, and making sure the good work gets credited to whoever actually did it.',
+    'I still read every one of those docs line by line. Cheapest bug fix there is, and nobody gets paged for it.',
   ],
-  headline: 'I lead engineers, unblock them, and review the code and architecture before production does.',
+  headline: 'I lead engineers, clear their path, and argue with the architecture while it\'s still just a diagram.',
   photo: { src: photo, alt: 'Varun Babu', position: '42% 34%' },
 };
 
@@ -59,24 +59,27 @@ export const stats = [
   { value: '7', label: 'years building software', accent: true },
   { value: '4', label: 'companies, one craft' },
   { value: 'SpeakUp', label: 'where I am now', small: true },
-  { value: '0', label: 'deploys on friday' },
+  // Headcount confirmed 11 as of Jul 2026. It also appears in bio[1], so change
+  // both together. "no deploys on friday" moved to the marquee, which is why
+  // this tile is free.
+  { value: '11', label: 'engineers I work for' },
 ];
 
 export const principles = [
   {
     n: '001',
     title: 'Unblock first, everything else second',
-    body: 'If someone is stuck, that is my top priority. A blocked engineer is the most expensive thing in the room.',
+    body: 'A blocked engineer is the most expensive thing in the building, and the last one to mention it. So I ask.',
   },
   {
     n: '002',
-    title: 'Review the design, not just the diff',
-    body: 'Architecture reviews catch the problems code review never will. Ask "what happens at 10x?" early, sleep better later.',
+    title: 'Disagree early, loudly, once',
+    body: 'The cheapest moment to hate a design is before anyone has built it. After that it is a migration with feelings.',
   },
   {
     n: '003',
     title: 'Grow people, not dependencies on me',
-    body: 'If the team only ships when I am online, I have built a bottleneck and called it leadership.',
+    body: 'If the team only ships when I\'m online, I haven\'t built a team. I\'ve built a bottleneck with a nice title.',
   },
 ];
 
