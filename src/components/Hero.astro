@@ -74,7 +74,12 @@ const outline = profile.last.split('');
     gap: 0 clamp(16px, 2.4vw, 40px);
     font-family: var(--display);
     font-weight: 800;
-    font-size: clamp(58px, 12.5vw, 196px);
+    /* Floor is 46px, not 58px: below ~465px the 12.5vw term drops under the
+       floor, so the floor wins and stops scaling. At 360px, a very common
+       Android width, 58px made the widest word 353px inside a 324px box and
+       pushed 11px of horizontal scroll onto the whole page. 46px still fits at
+       320px, measured, so it holds down to the narrowest screens in use. */
+    font-size: clamp(46px, 12.5vw, 196px);
     line-height: 0.86;
     letter-spacing: -0.02em;
     text-transform: uppercase;

@@ -59,7 +59,12 @@ import { experience } from '../data/site.js';
   .rows { border-top: 1px solid rgb(var(--line-rgb) / 0.1); }
   .row {
     display: grid;
-    grid-template-columns: minmax(140px, 0.55fr) minmax(200px, 1.4fr) minmax(150px, 0.9fr) auto;
+    /* Every track has to be fixed or pure-fr. Each .row is its own grid, so an
+       auto track, or a minmax whose min beats its fr share, sizes to that row's
+       own content and the columns stop lining up between rows. The last track
+       was auto and the durations differ ("present" vs "2 yrs 2 mos"), which
+       pushed .duration to 999/1024/985/985 across the four rows. */
+    grid-template-columns: minmax(0, 0.55fr) minmax(0, 1.4fr) minmax(0, 0.9fr) 112px;
     align-items: center;
     gap: clamp(14px, 3vw, 40px);
     padding: clamp(20px, 2.6vw, 34px) 8px;

@@ -155,7 +155,9 @@ a:hover { color: var(--acc); }
 
 .grid-auto {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* min(280px, 100%) so the track can never be wider than its container. A bare
+     280px min overflows the page below ~316px. */
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 18px;
 }
 
