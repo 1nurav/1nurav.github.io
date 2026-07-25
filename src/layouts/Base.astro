@@ -4,6 +4,13 @@
 // Google. Both are variable fonts, so one file each covers every weight.
 // Note the family names are 'Syne Variable' / 'JetBrains Mono Variable'
 // (Fontsource convention) — see --display and --mono in global.css.
+/* Preloaded by URL, not just imported. Without these the critical path is serial:
+   HTML, then CSS, then the browser discovers the fonts and fetches them, so the
+   first paint of a page whose hero is one giant word waits on a third round trip.
+   Only the latin subsets are preloaded; the rest stay gated behind unicode-range and
+   are never fetched for this content. ?url gives the hashed build path. */
+import syneLatin from '@fontsource-variable/syne/files/syne-latin-wght-normal.woff2?url';
+import monoLatin from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url';
 import '@fontsource-variable/syne/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/global.css';
@@ -27,6 +34,9 @@ const ogImage = new URL('/og.jpg', Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="preload" href={syneLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={monoLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+
     <meta name="theme-color" content="#08080a" />
 
     <!-- ICO first for browsers that ignore SVG icons, then the SVG they prefer:
