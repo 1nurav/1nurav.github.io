@@ -5,6 +5,17 @@
 // (WebP + a srcset). Full-resolution original lives in `originals/`, untracked.
 import photo from '../assets/varun.jpg';
 
+// Page title and meta description. They live here with the rest of the copy
+// rather than inline in index.astro, so the title, og:title and twitter card
+// all read from one string instead of drifting apart.
+export const meta = {
+  // Just the name: the role is already in the description, hero, marquee and
+  // stats, so repeating it in the tab earns nothing and truncates sooner.
+  title: 'Varun Babu',
+  description:
+    'Team Lead. Seven years building software. I lead engineers, unblock them, and review the code and architecture.',
+};
+
 export const profile = {
   first: 'Varun',
   last: 'Babu',

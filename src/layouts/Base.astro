@@ -29,6 +29,14 @@ const ogImage = new URL('/og.jpg', Astro.site);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#08080a" />
 
+    <!-- ICO first for browsers that ignore SVG icons, then the SVG they prefer:
+         both are declared because no single format covers everything. The
+         apple-touch-icon is the photo rather than the monogram, since iOS
+         renders it at 180px where a face is actually legible. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
     <link rel="canonical" href={pageUrl} />
 
     <meta property="og:type" content="website" />
