@@ -1,25 +1,33 @@
 // All runtime behaviour for the site. One rAF loop, one observer, no libraries.
 
-const PALETTE = ['#d6ff3f', '#ff5d3a', '#5cc8ff', '#f5f5f0'];
+/* Tuple, not string[]: a fixed length lets the modulo below resolve to a string
+   rather than string | undefined. */
+const PALETTE = ['#d6ff3f', '#ff5d3a', '#5cc8ff', '#f5f5f0'] as const;
 const LERP_CURSOR = 0.14;
 const LERP_AURA = 0.045;
 const MAGNET_REACH = 420;
 
-const $ = (sel) => document.querySelector(sel);
+/* Generic so each call site names what it expects, rather than widening to Element
+   and forcing casts later. Returns null when absent, which every caller checks. */
+const $ = <T extends Element = HTMLElement>(sel: string): T | null =>
+  document.querySelector<T>(sel);
 
 /* Real zone abbreviation (IST, CEST, PDT) where the browser has one for the
    visitor. Chrome only returns it under a matching locale, so try a few. */
-function zoneLabel() {
+function zoneLabel(): string {
   let tz = '';
   try {
     tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-  } catch (e) {}
+  } catch {}
 
-  const hints = {
+  const hints: Record<string, string> = {
     Asia: 'en-IN', Europe: 'en-GB', Australia: 'en-AU',
     America: 'en-US', Africa: 'en-ZA', Pacific: 'en-NZ',
   };
-  const candidates = [navigator.language, hints[tz.split('/')[0]], 'en-GB', 'en-US'].filter(Boolean);
+  const region = tz.split('/')[0] ?? '';
+  const candidates: string[] = [navigator.language, hints[region], 'en-GB', 'en-US'].filter(
+    (l): l is string => typeof l === 'string' && l.length > 0
+  );
 
   for (const loc of candidates) {
     try {
@@ -29,14 +37,17 @@ function zoneLabel() {
       }).formatToParts(new Date());
       const val = (parts.find((p) => p.type === 'timeZoneName') || {}).value || '';
       if (val && !/^(GMT|UTC)/i.test(val)) return val;
-    } catch (e) {}
+    } catch {}
   }
-  if (tz) return tz.split('/').pop().replace(/_/g, ' ');
+  if (tz) {
+    const city = tz.split('/').pop();
+    if (city) return city.replace(/_/g, ' ');
+  }
   const off = -new Date().getTimezoneOffset() / 60;
   return 'utc' + (off >= 0 ? '+' : '') + off;
 }
 
-function startClock() {
+function startClock(): void {
   const clock = $('[data-clock]');
   const zone = $('[data-zone]');
   if (zone) zone.textContent = zoneLabel();
@@ -48,7 +59,7 @@ function startClock() {
   setInterval(tick, 1000);
 }
 
-function startReveals() {
+function startReveals(): void {
   const items = Array.from(document.querySelectorAll('[data-reveal]'));
   if (!items.length) return;
 
@@ -89,15 +100,15 @@ function startReveals() {
   flush();
 }
 
-function startAccentCycling() {
+function startAccentCycling(): void {
   let i = 0;
   const cycle = () => {
     i = (i + 1) % PALETTE.length;
-    document.documentElement.style.setProperty('--acc', PALETTE[i]);
+    document.documentElement.style.setProperty('--acc', PALETTE[i % PALETTE.length] ?? PALETTE[0]);
     const egg = $('[data-egg]');
     if (egg) egg.textContent = 'nice. keep going';
   };
-  const trigger = $('[data-accent-toggle]');
+  const trigger = $<HTMLButtonElement>('[data-accent-toggle]');
   if (trigger) trigger.addEventListener('click', cycle);
   window.addEventListener('keydown', (e) => {
     // Bare "v" only. Without this, Cmd/Ctrl+V recolours the site on every paste.
@@ -109,12 +120,12 @@ function startAccentCycling() {
 /* mailto is unreliable — plenty of visitors have no mail client wired up, so the
    big address copies instead. The href stays a real mailto, so right-click,
    middle-click and the no-JS path all still behave. */
-function startCopyEmail() {
-  const link = $('[data-copy-email]');
+function startCopyEmail(): void {
+  const link = $<HTMLAnchorElement>('[data-copy-email]');
   const note = $('[data-copy-note]');
   if (!link) return;
-  const original = note ? note.textContent : '';
-  let timer;
+  const original = note ? (note.textContent ?? '') : '';
+  let timer: number | undefined;
 
   const confirm = () => {
     if (!note) return;
@@ -128,7 +139,7 @@ function startCopyEmail() {
   };
 
   // execCommand fallback for insecure origins, where navigator.clipboard is absent.
-  const legacy = (addr) => {
+  const legacy = (addr: string): void => {
     const ta = document.createElement('textarea');
     ta.value = addr;
     ta.style.cssText = 'position:fixed;opacity:0';
@@ -144,6 +155,7 @@ function startCopyEmail() {
   link.addEventListener('click', (e) => {
     e.preventDefault();
     const addr = link.getAttribute('data-copy-email');
+    if (!addr) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(addr).then(confirm, () => legacy(addr));
     } else {
@@ -161,22 +173,38 @@ function startCopyEmail() {
    hero does not bank a fake 40-second sector one. */
 const SECTORS = 3;
 
-function startSectorTiming() {
-  const track = $('[data-sectors]');
+/** What startSectorTiming hands back to the motion loop. */
+interface SectorTiming {
+  readonly update: () => void;
+  readonly layout: () => void;
+  readonly begin: () => void;
+}
+
+/** One sector row: its element, its fill, and its best time this visit. */
+interface Cell {
+  readonly el: HTMLElement;
+  readonly fill: HTMLElement;
+  /** Best time for this sector, ms. 0 until first set. */
+  pb: number;
+  lastWasPb: boolean;
+  set: boolean;
+}
+
+function startSectorTiming(): SectorTiming | null {
+  const track = $<HTMLElement>('[data-sectors]');
   if (!track) return null;
 
-  const car = $('[data-car]');
-  const wheels = car ? Array.from(car.querySelectorAll('[data-wheel]')) : [];
+  const car = $<HTMLElement>('[data-car]');
+  const wheels = car ? Array.from(car.querySelectorAll<SVGElement>('[data-wheel]')) : [];
   let carSpan = 0;
   let rollPerPx = 0;
 
-  const cells = Array.from(track.querySelectorAll('.sector')).map((el) => ({
-    el,
-    fill: el.querySelector('.sector-fill'),
-    pb: 0,          // best time this visit for this sector
-    lastWasPb: false,
-    set: false,
-  }));
+  const cells: Cell[] = Array.from(track.querySelectorAll<HTMLElement>('.sector'))
+    .map((el): Cell | null => {
+      const fill = el.querySelector<HTMLElement>('.sector-fill');
+      return fill ? { el, fill, pb: 0, lastWasPb: false, set: false } : null;
+    })
+    .filter((c): c is Cell => c !== null);
   if (!cells.length) return null;
 
   let maxScroll = 0;
@@ -206,15 +234,21 @@ function startSectorTiming() {
      it is the point rather than a glitch. With one sector set it is simply green;
      with two, the quicker is purple and the other yellow. */
   const recolour = () => {
-    const done = cells.map((c, i) => ({ i, t: c.pb })).filter((x) => cells[x.i].set);
-    done.sort((a, b) => a.t - b.t);
+    const done = cells
+      .filter((c) => c.set)
+      .map((cell) => ({ cell, t: cell.pb }))
+      .sort((a, b) => a.t - b.t);
 
     for (const c of cells) c.el.classList.remove('t-fast', 't-mid', 't-slow');
-    if (!done.length) return;
+    const first = done[0];
+    const last = done[done.length - 1];
+    if (!first || !last) return;
 
-    cells[done[0].i].el.classList.add('t-fast');
-    if (done.length > 1) cells[done[done.length - 1].i].el.classList.add('t-slow');
-    for (let r = 1; r < done.length - 1; r++) cells[done[r].i].el.classList.add('t-mid');
+    /* Carrying the cell rather than its index means every access here is provably
+       defined, which indexing a parallel array is not. */
+    first.cell.el.classList.add('t-fast');
+    if (done.length > 1) last.cell.el.classList.add('t-slow');
+    for (const d of done.slice(1, -1)) d.cell.el.classList.add('t-mid');
   };
 
   const update = () => {
@@ -222,9 +256,9 @@ function startSectorTiming() {
     const p = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 1;
     const scaled = p * SECTORS;
 
-    for (let i = 0; i < SECTORS; i++) {
-      cells[i].fill.style.width = Math.max(0, Math.min(1, scaled - i)) * 100 + '%';
-    }
+    cells.forEach((c, i) => {
+      c.fill.style.width = Math.max(0, Math.min(1, scaled - i)) * 100 + '%';
+    });
 
     if (car) {
       const x = p * carSpan;
@@ -240,6 +274,7 @@ function startSectorTiming() {
     if (idx !== current) {
       if (current > -1 && started) {
         const c = cells[current];
+        if (!c) return;
         const t = performance.now() - enteredAt;
         // Only credit a sector actually read, not one flown past while dragging
         // the scrollbar, which would set an unbeatable 80ms best every time.
@@ -271,11 +306,11 @@ function startSectorTiming() {
 /* Loitering. Do nothing on the hero for twenty seconds and the stewards notice. It
    re-arms on any input, and declines to fire once you have scrolled away, since
    penalising someone for actually reading is the wrong joke. */
-function startPenalty() {
+function startPenalty(): void {
   const box = $('[data-penalty]');
   if (!box) return;
-  let idle;
-  let clear;
+  let idle: number | undefined;
+  let clear: number | undefined;
 
   const arm = () => {
     clearTimeout(idle);
@@ -298,12 +333,12 @@ function startPenalty() {
 /* Section nav for narrow screens. The links used to be display: none below 720px,
    so phones had no way to reach a section at all. Closes on selection and on Escape,
    and keeps aria-expanded in step so it is a real disclosure to assistive tech. */
-function startNav() {
+function startNav(): void {
   const bar = document.querySelector('nav');
-  const btn = $('[data-nav-toggle]');
+  const btn = $<HTMLButtonElement>('[data-nav-toggle]');
   if (!bar || !btn) return;
 
-  const set = (open) => {
+  const set = (open: boolean): void => {
     bar.toggleAttribute('data-open', open);
     btn.setAttribute('aria-expanded', String(open));
   };
@@ -317,17 +352,17 @@ function startNav() {
   });
 }
 
-function startMotion() {
-  const ring = $('[data-cursor-ring]');
-  const dot = $('[data-cursor-dot]');
-  const aura = $('[data-aura]');
+function startMotion(): void {
+  const ring = $<HTMLElement>('[data-cursor-ring]');
+  const dot = $<HTMLElement>('[data-cursor-dot]');
+  const aura = $<HTMLElement>('[data-aura]');
   const sectors = startSectorTiming();
 
   /* The cursor ring, dot and aura are pointer-device flourishes. The timing strip
      is not: it is the page's progress indicator, and gating the whole loop behind
      (hover: hover) is why phones previously had no progress bar at all. */
   const pointerFx = window.matchMedia('(hover: hover)').matches;
-  const letters = Array.from(document.querySelectorAll('[data-kin]'));
+  const letters = Array.from(document.querySelectorAll<HTMLElement>('[data-kin]'));
 
   const mouse = { x: -999, y: -999 };
   const ringPos = { x: -999, y: -999 };
@@ -340,7 +375,9 @@ function startMotion() {
      so the magnet was feeding its own displacement back into its input: it
      settled near an 11% pull where the constant asks for 10%, with a distorted
      falloff curve. Caching resting centres in document space fixes both. */
-  let bases = [];
+  /** Resting centre of each letter, in document space. */
+  interface Base { readonly x: number; readonly y: number; }
+  let bases: Base[] = [];
   let lettersBottom = 0;
   let pulled = false;
   const lastTf = new Array(letters.length).fill('');
@@ -362,7 +399,7 @@ function startMotion() {
     pulled = false;
   };
 
-  const move = (el, x, y) => {
+  const move = (el: HTMLElement | null, x: number, y: number): void => {
     if (el) el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
   };
 
@@ -403,7 +440,11 @@ function startMotion() {
 
     if (sy < lettersBottom) {
       for (let i = 0; i < letters.length; i++) {
+        const el = letters[i];
         const b = bases[i];
+        /* Both arrays are filled together in measure(), so this only guards against a
+           letter added to the DOM after the last measure. */
+        if (!el || !b) continue;
         const dx = mouse.x - (b.x - sx);
         const dy = mouse.y - (b.y - sy);
         const dist = Math.hypot(dx, dy);
@@ -413,7 +454,7 @@ function startMotion() {
         const tf = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(' + tx * 0.03 + 'deg)';
         // Skip the write when nothing moved, so idle letters cost no style work.
         if (tf !== lastTf[i]) {
-          letters[i].style.transform = tf;
+          el.style.transform = tf;
           lastTf[i] = tf;
         }
       }
@@ -476,7 +517,7 @@ function startMotion() {
   wake();
 }
 
-export function init() {
+export function init(): void {
   // The CSS reduced-motion block only flattens durations; the pointer loop is JS,
   // and it is the tracking cursor, the drifting aura, and the letters that lunge
   // at the mouse. Those are exactly what the setting is asking us to stop.
