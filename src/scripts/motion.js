@@ -161,7 +161,6 @@ function startSectorTiming() {
   let maxScroll = 0;
   let current = -1;
   let enteredAt = 0;
-  let best = -1;
   let started = false;
 
   const layout = () => {
@@ -171,26 +170,21 @@ function startSectorTiming() {
     if (car) carSpan = Math.max(0, window.innerWidth - car.offsetWidth);
   };
 
-  /* Re-sorted on every completed sector, which is what makes the strip feel live:
-     purple moves to whichever sector is currently quickest, and a sector you
-     re-read faster than before flips from yellow to green. */
+  /* Ranked against each other rather than against a fixed threshold, so the strip
+     re-sorts on every completed sector: purple quickest, yellow slowest, green in
+     the middle. This is why setting a time in sector two can recolour sector one, and
+     it is the point rather than a glitch. With one sector set it is simply green;
+     with two, the quicker is purple and the other yellow. */
   const recolour = () => {
-    let bestIdx = -1;
-    let bestTime = Infinity;
-    for (let i = 0; i < cells.length; i++) {
-      if (cells[i].set && cells[i].pb < bestTime) {
-        bestTime = cells[i].pb;
-        bestIdx = i;
-      }
-    }
-    best = bestIdx;
-    for (let i = 0; i < cells.length; i++) {
-      const c = cells[i];
-      c.el.classList.remove('t-slow', 't-pb', 't-best');
-      if (!c.set) continue;
-      if (i === bestIdx) c.el.classList.add('t-best');
-      else c.el.classList.add(c.lastWasPb ? 't-pb' : 't-slow');
-    }
+    const done = cells.map((c, i) => ({ i, t: c.pb })).filter((x) => cells[x.i].set);
+    done.sort((a, b) => a.t - b.t);
+
+    for (const c of cells) c.el.classList.remove('t-fast', 't-mid', 't-slow');
+    if (!done.length) return;
+
+    cells[done[0].i].el.classList.add('t-fast');
+    if (done.length > 1) cells[done[done.length - 1].i].el.classList.add('t-slow');
+    for (let r = 1; r < done.length - 1; r++) cells[done[r].i].el.classList.add('t-mid');
   };
 
   const update = () => {

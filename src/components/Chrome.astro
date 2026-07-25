@@ -99,22 +99,24 @@
     box-shadow: 0 0 18px var(--acc);
     transition: background 0.45s var(--ease), box-shadow 0.45s var(--ease);
   }
-  /* Real timing-screen semantics, and they move: yellow for a sector slower than
-     your own best, green when you beat it, purple for the quickest of the three.
-     Scroll back up and read a stretch faster and the colours re-sort live. These
-     are literal signal colours from the sport, so unlike everything else here they
-     stay put while --acc cycles: a green that could turn orange means nothing. */
-  .sector.t-slow .sector-fill {
-    background: #ffd23f;
-    box-shadow: 0 0 12px rgb(255 210 63 / 0.45);
+  /* The three sectors are ranked against each other, so all three colours are
+     always in play once the lap is done, in the sport's own order: purple for your
+     quickest sector, green for the middle, yellow for the slowest. Set a new time
+     anywhere and the whole
+     strip re-sorts, which is why finishing sector two can recolour sector one.
+     Signal colours, so unlike everything else here they hold still while --acc
+     cycles: a green that could turn orange communicates nothing. */
+  .sector.t-fast .sector-fill {
+    background: #b14ff5;
+    box-shadow: 0 0 16px rgb(177 79 245 / 0.6);
   }
-  .sector.t-pb .sector-fill {
+  .sector.t-mid .sector-fill {
     background: #00d26a;
     box-shadow: 0 0 14px rgb(0 210 106 / 0.55);
   }
-  .sector.t-best .sector-fill {
-    background: #b14ff5;
-    box-shadow: 0 0 16px rgb(177 79 245 / 0.6);
+  .sector.t-slow .sector-fill {
+    background: #ffd23f;
+    box-shadow: 0 0 12px rgb(255 210 63 / 0.45);
   }
 
   /* Sits just under the strip with its wheels on it. translate3d only, so moving
