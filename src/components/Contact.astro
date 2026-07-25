@@ -36,7 +36,14 @@ const ICONS = {
       >
         {/* aria-label carries the name now that no text is drawn, so the glyph is
             hidden from assistive tech rather than announced twice. */}
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="currentColor"
+          aria-hidden="true"
+          focusable="false"
+        >
           <path d={ICONS[link.icon]} />
         </svg>
       </a>
@@ -92,6 +99,10 @@ const ICONS = {
     text-transform: uppercase;
     transition: background 0.3s, color 0.3s, border-color 0.3s;
   }
+  /* Size and fill are also presentation attributes on the svg itself. A path with
+     no fill declared defaults to black, so a cached or missing stylesheet would
+     leave five empty outlines on a near-black page. These make the icons survive
+     with no CSS at all. */
   .pill svg {
     width: 20px;
     height: 20px;
