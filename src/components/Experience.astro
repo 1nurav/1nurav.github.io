@@ -88,16 +88,18 @@ import { experience } from '../data/site.js';
     align-items: center;
     gap: clamp(10px, 1.4vw, 18px);
   }
-  /* Four brand palettes would fight each other and the accent, so every mark is
-     flattened to flat white and reads as one set. Height is capped rather than
-     width because the marks range from a square glyph to a 4.4:1 wordmark. */
+  /* No filter and no backing plate: each file is already dark-background ready,
+     so brand colour survives untouched. Navex keeps its #FF4500 and
+     PeopleInTouch its blue, both of which clear 3:1 on --bg unaided. SpeakUp
+     keeps its #00b68d mark with only the neutral wordmark lifted, and
+     GlobalLogic is monochrome so it carries no hue to lose. See the README in
+     public/assets/logos. Height is capped rather than width: the marks run from
+     a square glyph to a 4.4:1 wordmark. */
   .logo {
     height: clamp(18px, 2vw, 26px);
     width: auto;
     max-width: 92px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: 0.82;
   }
 
   h3 {
