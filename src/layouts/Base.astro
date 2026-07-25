@@ -14,11 +14,28 @@ import monoLatin from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-
 import '@fontsource-variable/syne/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/global.css';
+import { profile, links } from '../data/site';
 import Chrome from '../components/Chrome.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
 const { title, description } = Astro.props;
+
+/* Person schema. Search engines use this to treat the site as an entity rather than
+   just a page, which is the whole point for a personal site. Built from site.ts so the
+   name, role and links cannot drift from what the page renders. It is not executed as
+   JavaScript, the MIME type is not a JS type, so it costs no parse or execute time. */
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: `${profile.first} ${profile.last}`,
+  jobTitle: profile.role,
+  email: `mailto:${profile.email}`,
+  url: Astro.site?.href ?? 'https://1nurav.github.io/',
+  description,
+  worksFor: { '@type': 'Organization', name: 'SpeakUp' },
+  sameAs: links.filter((l) => l.href.startsWith('http')).map((l) => l.href),
+};
 
 // Canonical and Open Graph both require absolute URLs. Built from the current
 // pathname rather than bare Astro.site, which would point every future page at
@@ -48,6 +65,8 @@ const ogImage = new URL('/og.jpg', Astro.site);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <link rel="canonical" href={pageUrl} />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(person)} />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

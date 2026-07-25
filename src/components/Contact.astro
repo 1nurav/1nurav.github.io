@@ -21,7 +21,7 @@ const ICONS = {
   {/* The href stays a real mailto so right-click, middle-click and no-JS all
       still work. motion.js intercepts the plain click and copies instead. */}
   <a class="email" href={'mailto:' + profile.email} data-copy-email={profile.email} data-reveal>{profile.email}</a>
-  <div class="copy-note" data-copy-note data-reveal>click it, copies to clipboard</div>
+  <div class="copy-note" data-copy-note data-reveal>click it. no mail client required</div>
 
   <div class="pills">
     {links.map((link) => (

@@ -103,6 +103,10 @@ a:hover { color: var(--acc); }
 
 /* ---- shared building blocks -------------------------------------------- */
 .section {
+  /* The nav is fixed, so an anchor jump would otherwise park the section's eyebrow
+     underneath it. Clears the bar plus a little breathing room. Matters more now the
+     mobile menu makes these links reachable on a phone. */
+  scroll-margin-top: 84px;
   position: relative;
   z-index: 2;
   padding: var(--section-y) var(--gutter);

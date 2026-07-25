@@ -125,7 +125,7 @@ function startCopyEmail(): void {
   const note = $('[data-copy-note]');
   if (!link) return;
   const original = note ? (note.textContent ?? '') : '';
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   const confirm = () => {
     if (!note) return;
@@ -309,8 +309,8 @@ function startSectorTiming(): SectorTiming | null {
 function startPenalty(): void {
   const box = $('[data-penalty]');
   if (!box) return;
-  let idle: number | undefined;
-  let clear: number | undefined;
+  let idle: ReturnType<typeof setTimeout> | undefined;
+  let clear: ReturnType<typeof setTimeout> | undefined;
 
   const arm = () => {
     clearTimeout(idle);
