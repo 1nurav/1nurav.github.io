@@ -18,8 +18,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: withastro/action@v3
+      # v4 of these pinned Node 20, which runners now force onto 24 with a
+      # deprecation warning. withastro/action v6 defaults to Node 24 and caches
+      # node_modules/.astro, so repeat deploys reuse the optimized images instead
+      # of re-encoding all five WebP variants.
+      - uses: actions/checkout@v5
+      - uses: withastro/action@v6
 
   deploy:
     needs: build
@@ -29,4 +33,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -11,13 +11,9 @@ npm run dev
 
 ## Deploy
 
-Push to `main`. The workflow in `.github/workflows/deploy.yml` builds and publishes to Pages.
-One-time setup: repo **Settings → Pages → Source → GitHub Actions**.
-
-```bash
-git init && git add . && git commit -m 'portfolio'
-gh repo create 1nurav/1nurav.github.io --public --push
-```
+Push to `main`. The workflow in `.github/workflows/deploy.yml` builds and publishes
+to Pages. Pages is already configured with GitHub Actions as its source, so there
+is no setup step to repeat.
 
 ## Where things live
 
@@ -27,10 +23,22 @@ gh repo create 1nurav/1nurav.github.io --public --push
 | `src/styles/global.css` | Design tokens, resets, shared classes, keyframes. |
 | `src/components/` | One component per section, plus small reusable parts. |
 | `src/scripts/motion.js` | Cursor, kinetic type, reveals, clock, accent cycling. |
-| `public/assets/` | Photo and grain texture. |
+| `src/assets/` | Images that should be optimized at build time. |
+| `public/` | Files that need a stable, unhashed URL. |
+| `originals/` | Full-resolution photo masters. Untracked, local only. |
+
+## Images
+
+Anything in `src/assets/` and imported goes through `astro:assets`: WebP output, a
+generated `srcset`, and `width`/`height` baked in so it cannot shift the layout.
+Anything in `public/` is served byte-for-byte with no processing.
+
+Use `src/assets/` by default. `public/` is for the two cases that need a URL which
+never changes: `grain.svg`, referenced from a CSS `url()` inside a scoped style
+block, and `og.jpg`, whose link previews are cached by third parties.
 
 ## Adding a project
 
 Append an entry to `projects` in `src/data/site.js`. Drop a screenshot in
-`public/assets/` and set `image` to its path — the card renders it instead of the
-striped placeholder. No markup changes needed.
+`src/assets/`, import it at the top of that file, and set `image` to the import —
+the card renders it instead of the striped placeholder. No markup changes needed.
