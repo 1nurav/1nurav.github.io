@@ -35,6 +35,7 @@ export const profile = {
 export const links = [
   { label: 'X / @1nurav', href: 'https://x.com/1nurav' },
   { label: 'GitHub / @1nurav', href: 'https://github.com/1nurav' },
+  { label: 'LinkedIn / @1nurav', href: 'https://linkedin.com/in/1nurav' },
   { label: 'Instagram / @1nurav', href: 'https://instagram.com/1nurav' },
   // Labelled for what it does, not what it is: the big address above copies
   // to the clipboard, so this pill is the one that opens a mail client.

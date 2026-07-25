@@ -46,9 +46,17 @@
       <circle cx="55" cy="32" r="18"/>
       <circle cx="235" cy="32" r="18"/>
     </g>
+    <g class="sidewall">
+      <circle cx="55" cy="32" r="16.2"/>
+      <circle cx="235" cy="32" r="16.2"/>
+    </g>
+    <g class="rim">
+      <circle cx="55" cy="32" r="8.4"/>
+      <circle cx="235" cy="32" r="8.4"/>
+    </g>
     <g class="hub">
-      <circle cx="55" cy="32" r="7.5"/>
-      <circle cx="235" cy="32" r="7.5"/>
+      <circle cx="55" cy="32" r="3.2"/>
+      <circle cx="235" cy="32" r="3.2"/>
     </g>
   </svg>
 </div>
@@ -140,12 +148,17 @@
   .car .shell { fill: #1b2c63; }
   .car .flash-y { fill: #ffc907; }
   .car .flash-r { fill: #da291c; }
-  .car .tyre { fill: #e8e8e2; }
-  .car .hub { fill: var(--bg); }
+  /* Real tyres rather than white discs: dark carcass with the yellow sidewall band
+     of a medium compound, which doubles as the thing that keeps a near-black tyre
+     legible on a near-black page. Then rim and hub. */
+  .car .tyre { fill: #15151b; }
+  .car .sidewall { fill: none; stroke: #ffc907; stroke-width: 1.7; }
+  .car .rim { fill: #56566a; }
+  .car .hub { fill: #15151b; }
   .car .halo {
     fill: none;
-    stroke: #ffc907;
-    stroke-width: 3.5;
+    stroke: #e8e8e2;
+    stroke-width: 3.2;
     stroke-linecap: round;
   }
   /* Nothing drives it when the motion loop is off, so it would sit parked at the
