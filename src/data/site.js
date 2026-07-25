@@ -118,6 +118,6 @@ export const experience = [
     logo: '/assets/logos/globallogic.png',
     period: 'Jul 2019 — Feb 2023',
     duration: '3 yrs 7 mos',
-    note: 'Where it started. Learned more from code review than from any course.',
+    note: 'Where it started. Code review taught me more than the degree did.',
   },
 ];
