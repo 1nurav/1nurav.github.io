@@ -133,11 +133,111 @@ function startCopyEmail() {
   });
 }
 
-function startPointerMotion() {
+/* Sector timing. Three sectors, because a lap has three: each is a third of the
+   scrollable range, so the strip is a real position readout rather than four
+   arbitrary section widths. Leaving a sector sets it, and the quickest sector of
+   the visit goes purple. That is the one piece of F1 grammar a fan needs no
+   explanation for, and it degrades to an ordinary progress bar for everyone else.
+   Timing starts on first scroll, not on load, so leaving the tab parked on the
+   hero does not bank a fake 40-second sector one. */
+const SECTORS = 3;
+
+function startSectorTiming() {
+  const track = $('[data-sectors]');
+  if (!track) return null;
+
+  const cells = Array.from(track.querySelectorAll('.sector')).map((el) => ({
+    el,
+    fill: el.querySelector('.sector-fill'),
+    pb: 0,          // best time this visit for this sector
+    lastWasPb: false,
+    set: false,
+  }));
+  if (!cells.length) return null;
+
+  let maxScroll = 0;
+  let current = -1;
+  let enteredAt = 0;
+  let best = -1;
+  let started = false;
+
+  const layout = () => {
+    maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  };
+
+  /* Re-sorted on every completed sector, which is what makes the strip feel live:
+     purple moves to whichever sector is currently quickest, and a sector you
+     re-read faster than before flips from yellow to green. */
+  const recolour = () => {
+    let bestIdx = -1;
+    let bestTime = Infinity;
+    for (let i = 0; i < cells.length; i++) {
+      if (cells[i].set && cells[i].pb < bestTime) {
+        bestTime = cells[i].pb;
+        bestIdx = i;
+      }
+    }
+    best = bestIdx;
+    for (let i = 0; i < cells.length; i++) {
+      const c = cells[i];
+      c.el.classList.remove('t-slow', 't-pb', 't-best');
+      if (!c.set) continue;
+      if (i === bestIdx) c.el.classList.add('t-best');
+      else c.el.classList.add(c.lastWasPb ? 't-pb' : 't-slow');
+    }
+  };
+
+  const update = () => {
+    // A page shorter than the viewport has no sectors to time; show it complete.
+    const p = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 1;
+    const scaled = p * SECTORS;
+
+    for (let i = 0; i < SECTORS; i++) {
+      cells[i].fill.style.width = Math.max(0, Math.min(1, scaled - i)) * 100 + '%';
+    }
+
+    const idx = Math.min(SECTORS - 1, Math.floor(scaled));
+    if (idx !== current) {
+      if (current > -1 && started) {
+        const c = cells[current];
+        const t = performance.now() - enteredAt;
+        // Only credit a sector actually read, not one flown past while dragging
+        // the scrollbar, which would set an unbeatable 80ms best every time.
+        if (t > 400) {
+          // First run through a sector is a personal best by definition.
+          c.lastWasPb = c.pb === 0 || t < c.pb;
+          if (c.lastWasPb) c.pb = t;
+          c.set = true;
+          recolour();
+        }
+      }
+      current = idx;
+      enteredAt = performance.now();
+    }
+  };
+
+  const begin = () => {
+    if (started) return;
+    started = true;
+    enteredAt = performance.now();
+  };
+
+  layout();
+  update();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); update(); });
+  return { update, layout, begin };
+}
+
+function startMotion() {
   const ring = $('[data-cursor-ring]');
   const dot = $('[data-cursor-dot]');
   const aura = $('[data-aura]');
-  const bar = $('[data-progress]');
+  const sectors = startSectorTiming();
+
+  /* The cursor ring, dot and aura are pointer-device flourishes. The timing strip
+     is not: it is the page's progress indicator, and gating the whole loop behind
+     (hover: hover) is why phones previously had no progress bar at all. */
+  const pointerFx = window.matchMedia('(hover: hover)').matches;
   const letters = Array.from(document.querySelectorAll('[data-kin]'));
 
   const mouse = { x: -999, y: -999 };
@@ -153,7 +253,6 @@ function startPointerMotion() {
      falloff curve. Caching resting centres in document space fixes both. */
   let bases = [];
   let lettersBottom = 0;
-  let maxScroll = 0;
   let pulled = false;
   const lastTf = new Array(letters.length).fill('');
 
@@ -169,7 +268,7 @@ function startPointerMotion() {
       return { x: r.left + r.width / 2 + sx, y: r.top + r.height / 2 + sy };
     });
     lettersBottom = bases.reduce((m, b) => Math.max(m, b.y), 0) + MAGNET_REACH;
-    maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (sectors) sectors.layout();
     lastTf.fill('');
     pulled = false;
   };
@@ -194,6 +293,7 @@ function startPointerMotion() {
     const scrolledOrResized = nudged;
     nudged = false;
 
+    if (pointerFx) {
     ringPos.x += (mouse.x - ringPos.x) * LERP_CURSOR;
     ringPos.y += (mouse.y - ringPos.y) * LERP_CURSOR;
     auraPos.x += (mouse.x - auraPos.x) * LERP_AURA;
@@ -205,8 +305,9 @@ function startPointerMotion() {
     move(aura, auraPos.x, auraPos.y);
     if (ring) ring.style.opacity = visible;
     if (dot) dot.style.opacity = visible;
+    }
 
-    if (bar) bar.style.width = (maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0) + '%';
+    if (sectors) sectors.update();
 
     const sx = window.scrollX;
     const sy = window.scrollY;
@@ -238,6 +339,7 @@ function startPointerMotion() {
     }
 
     const settled =
+      !pointerFx ||
       Math.abs(mouse.x - ringPos.x) < 0.25 &&
       Math.abs(mouse.y - ringPos.y) < 0.25 &&
       Math.abs(mouse.x - auraPos.x) < 0.25 &&
@@ -250,18 +352,21 @@ function startPointerMotion() {
     requestAnimationFrame(frame);
   };
 
-  window.addEventListener(
-    'mousemove',
-    (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      wake();
-    },
-    { passive: true }
-  );
+  if (pointerFx) {
+    window.addEventListener(
+      'mousemove',
+      (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        wake();
+      },
+      { passive: true }
+    );
+  }
   window.addEventListener(
     'scroll',
     () => {
+      if (sectors) sectors.begin();
       nudged = true;
       wake();
     },
@@ -294,5 +399,7 @@ export function init() {
   startCopyEmail();
   // Skipped when reduced, so nothing is ever left hidden waiting on a reveal.
   if (!reduced) startReveals();
-  if (!reduced && window.matchMedia('(hover: hover)').matches) startPointerMotion();
+  // Always run: the loop owns the timing strip, and decides internally whether
+  // the cursor flourishes apply. Reduced motion still opts out of the lot.
+  if (!reduced) startMotion();
 }

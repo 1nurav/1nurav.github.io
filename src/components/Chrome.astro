@@ -1,11 +1,17 @@
 ---
-// Fixed overlays: film grain, scroll progress, custom cursor, cursor aura.
+// Fixed overlays: film grain, sector timing strip, custom cursor, cursor aura.
 ---
 
 <div class="grain" data-grain></div>
 
-<div class="progress-track">
-  <div class="progress-fill" data-progress></div>
+{/* Timing strip. Three sectors, because a lap has three, each one a third of the
+    scroll. A sector fills as you read it and locks when you leave: green once set,
+    purple for the quickest of the visit. Reads as a plain progress bar to anyone
+    who does not follow the sport. */}
+<div class="progress-track" data-sectors aria-hidden="true">
+  <div class="sector"><div class="sector-fill"></div></div>
+  <div class="sector"><div class="sector-fill"></div></div>
+  <div class="sector"><div class="sector-fill"></div></div>
 </div>
 
 <div class="cursor-ring" data-cursor-ring></div>
@@ -34,15 +40,42 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 3px;
     z-index: 9100;
+    display: flex;
+    /* Sector widths track how much page each one occupies, set from motion.js, so
+       the strip is a map of the document rather than four equal quarters. */
+    gap: 2px;
     background: rgb(var(--line-rgb) / 0.06);
   }
-  .progress-fill {
+  .sector {
+    position: relative;
+    flex: 1 1 0;
+    overflow: hidden;
+  }
+  .sector-fill {
     height: 100%;
     width: 0;
     background: var(--acc);
     box-shadow: 0 0 18px var(--acc);
+    transition: background 0.45s var(--ease), box-shadow 0.45s var(--ease);
+  }
+  /* Real timing-screen semantics, and they move: yellow for a sector slower than
+     your own best, green when you beat it, purple for the quickest of the three.
+     Scroll back up and read a stretch faster and the colours re-sort live. These
+     are literal signal colours from the sport, so unlike everything else here they
+     stay put while --acc cycles: a green that could turn orange means nothing. */
+  .sector.t-slow .sector-fill {
+    background: #ffd23f;
+    box-shadow: 0 0 12px rgb(255 210 63 / 0.45);
+  }
+  .sector.t-pb .sector-fill {
+    background: #00d26a;
+    box-shadow: 0 0 14px rgb(0 210 106 / 0.55);
+  }
+  .sector.t-best .sector-fill {
+    background: #b14ff5;
+    box-shadow: 0 0 16px rgb(177 79 245 / 0.6);
   }
 
   .cursor-ring,

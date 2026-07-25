@@ -61,10 +61,25 @@ import { nav } from '../data/site.js';
   .sig path {
     stroke-dasharray: 100;
     stroke-dashoffset: 100;
-    animation: sign 0.9s ease forwards;
+    animation-name: sign;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
   }
-  .sig-v { stroke: var(--acc); animation-delay: 0.3s; }
-  .sig-b { stroke: var(--fg); animation-delay: 1s; animation-duration: 1s; }
+  /* Written long-hand, and qualified with `path` to match the specificity of the
+     rule above. The `animation` shorthand there resets animation-delay to 0, and
+     `.sig path` (0,1,1) outranks a bare `.sig-v` (0,1,0), so the delays were being
+     silently discarded and both letters drew at once. The V finishes at 1.0s and
+     the B starts at 1.05s, so the hand never appears to write two strokes at once. */
+  .sig path.sig-v {
+    stroke: var(--acc);
+    animation-duration: 0.75s;
+    animation-delay: 0.25s;
+  }
+  .sig path.sig-b {
+    stroke: var(--fg);
+    animation-duration: 0.95s;
+    animation-delay: 1.05s;
+  }
   @keyframes sign {
     to { stroke-dashoffset: 0; }
   }
