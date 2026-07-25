@@ -6,3 +6,9 @@ node_modules/
 
 # Full-resolution photo masters. Kept locally, too heavy to ship.
 originals/
+
+# Session transcripts. Local reference only, never publishable:
+# this repo is public and the transcripts contain work email addresses and
+# internal system names.
+*.jsonl
+session-*.json
