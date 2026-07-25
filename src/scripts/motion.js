@@ -98,20 +98,56 @@ function startPointerMotion() {
   const ringPos = { x: -999, y: -999 };
   const auraPos = { x: -999, y: -999 };
 
-  window.addEventListener(
-    'mousemove',
-    (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    },
-    { passive: true }
-  );
+  /* Geometry is measured once and cached rather than read per frame. Two reasons.
+     getBoundingClientRect() and scrollHeight both force a synchronous layout, so
+     reading them for every letter on every frame meant ~10 layout flushes at
+     60fps forever. And the rect of a transformed element reports the *moved* box,
+     so the magnet was feeding its own displacement back into its input: it
+     settled near an 11% pull where the constant asks for 10%, with a distorted
+     falloff curve. Caching resting centres in document space fixes both. */
+  let bases = [];
+  let lettersBottom = 0;
+  let maxScroll = 0;
+  let pulled = false;
+  const lastTf = new Array(letters.length).fill('');
+
+  const measure = () => {
+    // Clear transforms first so we capture resting positions, not pulled ones.
+    letters.forEach((el) => {
+      el.style.transform = '';
+    });
+    const sx = window.scrollX;
+    const sy = window.scrollY;
+    bases = letters.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2 + sx, y: r.top + r.height / 2 + sy };
+    });
+    lettersBottom = bases.reduce((m, b) => Math.max(m, b.y), 0) + MAGNET_REACH;
+    maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    lastTf.fill('');
+    pulled = false;
+  };
 
   const move = (el, x, y) => {
     if (el) el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
   };
 
+  /* The loop parks itself once everything has caught up, and any input wakes it.
+     Someone who has stopped moving the pointer to actually read the page should
+     cost nothing, rather than 60 wasted frames a second until the tab closes. */
+  let running = false;
+  let nudged = false;
+
+  const wake = () => {
+    if (running) return;
+    running = true;
+    requestAnimationFrame(frame);
+  };
+
   const frame = () => {
+    const scrolledOrResized = nudged;
+    nudged = false;
+
     ringPos.x += (mouse.x - ringPos.x) * LERP_CURSOR;
     ringPos.y += (mouse.y - ringPos.y) * LERP_CURSOR;
     auraPos.x += (mouse.x - auraPos.x) * LERP_AURA;
@@ -124,26 +160,80 @@ function startPointerMotion() {
     if (ring) ring.style.opacity = visible;
     if (dot) dot.style.opacity = visible;
 
-    if (bar) {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+    if (bar) bar.style.width = (maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0) + '%';
+
+    const sx = window.scrollX;
+    const sy = window.scrollY;
+
+    if (sy < lettersBottom) {
+      for (let i = 0; i < letters.length; i++) {
+        const b = bases[i];
+        const dx = mouse.x - (b.x - sx);
+        const dy = mouse.y - (b.y - sy);
+        const dist = Math.hypot(dx, dy);
+        const k = dist < MAGNET_REACH ? Math.pow(1 - dist / MAGNET_REACH, 2) : 0;
+        const tx = -dx * 0.1 * k;
+        const ty = -dy * 0.16 * k;
+        const tf = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(' + tx * 0.03 + 'deg)';
+        // Skip the write when nothing moved, so idle letters cost no style work.
+        if (tf !== lastTf[i]) {
+          letters[i].style.transform = tf;
+          lastTf[i] = tf;
+        }
+      }
+      pulled = true;
+    } else if (pulled) {
+      // Released once on the way out rather than re-cleared every frame.
+      letters.forEach((el) => {
+        el.style.transform = '';
+      });
+      lastTf.fill('');
+      pulled = false;
     }
 
-    letters.forEach((el) => {
-      const r = el.getBoundingClientRect();
-      const dx = mouse.x - (r.left + r.width / 2);
-      const dy = mouse.y - (r.top + r.height / 2);
-      const dist = Math.hypot(dx, dy);
-      const k = dist < MAGNET_REACH ? Math.pow(1 - dist / MAGNET_REACH, 2) : 0;
-      const tx = -dx * 0.1 * k;
-      const ty = -dy * 0.16 * k;
-      el.style.transform =
-        'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(' + tx * 0.03 + 'deg)';
-    });
+    const settled =
+      Math.abs(mouse.x - ringPos.x) < 0.25 &&
+      Math.abs(mouse.y - ringPos.y) < 0.25 &&
+      Math.abs(mouse.x - auraPos.x) < 0.25 &&
+      Math.abs(mouse.y - auraPos.y) < 0.25;
 
+    if (settled && !scrolledOrResized) {
+      running = false;
+      return;
+    }
     requestAnimationFrame(frame);
   };
-  requestAnimationFrame(frame);
+
+  window.addEventListener(
+    'mousemove',
+    (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      wake();
+    },
+    { passive: true }
+  );
+  window.addEventListener(
+    'scroll',
+    () => {
+      nudged = true;
+      wake();
+    },
+    { passive: true }
+  );
+  window.addEventListener('resize', () => {
+    measure();
+    nudged = true;
+    wake();
+  });
+
+  measure();
+  /* Webfonts land after first paint under font-display: swap, and the hero name
+     is set in Syne, so the letters reflow when it swaps in. Without this the
+     cached centres describe the fallback's metrics and the magnet pulls toward
+     the wrong spot for the life of the page. */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  wake();
 }
 
 export function init() {
