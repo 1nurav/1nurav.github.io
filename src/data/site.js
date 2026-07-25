@@ -13,13 +13,13 @@ export const meta = {
   // stats, so repeating it in the tab earns nothing and truncates sooner.
   title: 'Varun Babu',
   description:
-    'Team Lead. Seven years in, eleven engineers, and the meeting cancelled on your behalf.',
+    'Lead Software Engineer. Seven years in, eleven engineers, and the meeting cancelled on your behalf.',
 };
 
 export const profile = {
   first: 'Varun',
   last: 'Babu',
-  role: 'Team Lead',
+  role: 'Lead Software Engineer',
   email: 'varunnaidu307@gmail.com',
   intro:
     'Good engineers don\'t need managing. They need the meeting cancelled, the decision made, and someone to go argue with the other team. That part I can do.',
@@ -32,7 +32,7 @@ export const profile = {
   photo: { src: photo, alt: 'Varun Babu', position: '42% 34%' },
 };
 
-// The pills render  as a glyph, so  is no longer drawn: it becomes the
+// The pills render the icon as a glyph, so the label is no longer drawn: it
 // accessible name instead, which is why it still reads as a full phrase.
 export const links = [
   { icon: 'x', label: 'X, @1nurav', href: 'https://x.com/1nurav' },
