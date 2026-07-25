@@ -295,6 +295,28 @@ function startPenalty() {
   arm();
 }
 
+/* Section nav for narrow screens. The links used to be display: none below 720px,
+   so phones had no way to reach a section at all. Closes on selection and on Escape,
+   and keeps aria-expanded in step so it is a real disclosure to assistive tech. */
+function startNav() {
+  const bar = document.querySelector('nav');
+  const btn = $('[data-nav-toggle]');
+  if (!bar || !btn) return;
+
+  const set = (open) => {
+    bar.toggleAttribute('data-open', open);
+    btn.setAttribute('aria-expanded', String(open));
+  };
+
+  btn.addEventListener('click', () => set(!bar.hasAttribute('data-open')));
+  bar.querySelectorAll('#nav-links a').forEach((a) =>
+    a.addEventListener('click', () => set(false))
+  );
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') set(false);
+  });
+}
+
 function startMotion() {
   const ring = $('[data-cursor-ring]');
   const dot = $('[data-cursor-dot]');
@@ -464,6 +486,8 @@ export function init() {
   startAccentCycling();
   // Not motion, so it runs regardless of the reduced-motion preference.
   startCopyEmail();
+  // Navigation, not motion: it runs regardless of the reduced-motion preference.
+  startNav();
   // Not motion, so it runs regardless of the reduced-motion preference.
   startPenalty();
   // Skipped when reduced, so nothing is ever left hidden waiting on a reveal.

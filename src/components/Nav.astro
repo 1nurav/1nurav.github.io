@@ -21,9 +21,25 @@ import { nav } from '../data/site.js';
     </svg>
   </button>
 
-  <div class="links">
+  <div class="links" id="nav-links">
     {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+  </div>
+
+  <div class="actions">
     <a class="cta" href="#contact">say hi</a>
+    {/* Only rendered for narrow screens, where the section links collapse. aria-expanded
+        and aria-controls carry the state, so it announces as a real disclosure rather
+        than an unlabelled button. */}
+    <button
+      type="button"
+      class="burger"
+      data-nav-toggle
+      aria-expanded="false"
+      aria-controls="nav-links"
+      aria-label="Sections"
+    >
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
@@ -104,6 +120,40 @@ import { nav } from '../data/site.js';
   .links a { color: rgb(var(--fg-rgb) / 0.66); }
   .links a:hover { color: var(--acc); }
 
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Hidden on desktop, where the links sit inline and need no disclosure. */
+  .burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    /* 44px square: the guideline minimum, and the reason this is a button with
+       padding rather than three bare lines. */
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .burger span {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    margin: 0 auto;
+    background: var(--fg);
+    transition: transform 0.3s var(--ease), opacity 0.2s var(--ease);
+  }
+  /* Into an X, so the button says what it will do next. */
+  nav[data-open] .burger span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+  nav[data-open] .burger span:nth-child(2) { opacity: 0; }
+  nav[data-open] .burger span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
   .cta {
     padding: 9px 16px;
     border: 1px solid var(--acc);
@@ -117,6 +167,34 @@ import { nav } from '../data/site.js';
   }
 
   @media (max-width: 720px) {
-    .links a:not(.cta) { display: none; }
+    .burger { display: flex; }
+
+    /* The links become a panel under the bar instead of vanishing. nav is already
+       position: fixed, so absolute positioning here anchors to it. */
+    .links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 4px var(--gutter) 14px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+    nav[data-open] .links { display: flex; }
+    /* Generous rows: a 12px link needs padding to reach a usable tap target. */
+    .links a {
+      padding: 15px 0;
+      border-bottom: 1px solid rgb(var(--line-rgb) / 0.06);
+    }
+    .links a:last-child { border-bottom: 0; }
+
+    /* Both of these were under 44px tall: 94x27 and 85x35. */
+    .monogram { padding: 6px 4px; }
+    .cta { padding: 13px 18px; }
   }
 </style>
