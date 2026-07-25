@@ -1,0 +1,8 @@
+dist/
+node_modules/
+.astro/
+.DS_Store
+*.log
+
+# Full-resolution photo masters. Kept locally, too heavy to ship.
+originals/
