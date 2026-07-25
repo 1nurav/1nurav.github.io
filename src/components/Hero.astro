@@ -1,0 +1,125 @@
+---
+import { profile } from '../data/site.js';
+
+const solid = profile.first.split('');
+const outline = profile.last.split('');
+---
+
+<header>
+  <div class="status">
+    <span class="pulse"></span>
+    <span>{profile.role}</span>
+    <span class="sep">/</span>
+    <span data-clock>--:--:--</span>
+    <span class="sep">/</span>
+    <span data-zone>local</span>
+  </div>
+
+  <h1 class="name">
+    <span class="word">
+      {solid.map((c) => <span data-kin>{c}</span>)}
+    </span>
+    <span class="word outline">
+      {outline.map((c) => <span data-kin>{c}</span>)}
+    </span>
+  </h1>
+
+  <div class="foot">
+    <p class="intro" data-reveal>{profile.intro}</p>
+    <div class="scroll" data-reveal>
+      <span class="spinner"></span>
+      <span>scroll, obviously</span>
+    </div>
+  </div>
+</header>
+
+<style>
+  header {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(110px, 14vh, 150px) var(--gutter) clamp(30px, 6vh, 56px);
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(241, 241, 236, 0.5);
+  }
+  .sep { color: rgba(241, 241, 236, 0.24); }
+  .pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--acc);
+    animation: blink 1.4s infinite;
+  }
+
+  .name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0 clamp(16px, 2.4vw, 40px);
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(58px, 12.5vw, 196px);
+    line-height: 0.86;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    user-select: none;
+  }
+  .word {
+    display: flex;
+    gap: 0.012em;
+  }
+  .word span {
+    display: inline-block;
+    will-change: transform;
+  }
+  .outline {
+    gap: 0.05em;
+    padding-right: 0.06em;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--acc);
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 34px;
+    margin-top: clamp(34px, 6vw, 72px);
+  }
+  .intro {
+    max-width: 44ch;
+    font-size: clamp(14px, 1.15vw, 17px);
+    line-height: 1.65;
+    color: var(--fg-70);
+  }
+  .scroll {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(241, 241, 236, 0.42);
+  }
+  .spinner {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(241, 241, 236, 0.2);
+    border-top-color: var(--acc);
+    animation: spin 2.6s linear infinite;
+  }
+</style>

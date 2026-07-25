@@ -1,0 +1,28 @@
+---
+import { profile } from '../data/site.js';
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <span>&#169; {year} {profile.first} {profile.last}</span>
+  <span>hand-built, no templates, mild sleep deprivation</span>
+  <span data-egg>press "v" if you're bored</span>
+</footer>
+
+<style>
+  footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 26px var(--gutter);
+    border-top: 1px solid var(--line-soft);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(241, 241, 236, 0.38);
+  }
+</style>

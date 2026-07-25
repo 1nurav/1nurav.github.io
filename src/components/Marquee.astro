@@ -1,0 +1,47 @@
+---
+import { marquee } from '../data/site.js';
+
+// Track is duplicated so the -50% translate loops seamlessly.
+const track = [...marquee, ...marquee];
+---
+
+<div class="strip">
+  <div class="track">
+    <span class="run">
+      {track.map((word) => (
+        <Fragment>
+          <span>{word}</span>
+          <span>*</span>
+        </Fragment>
+      ))}
+    </span>
+  </div>
+</div>
+
+<style>
+  .strip {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    padding: 16px 0;
+    background: var(--acc);
+    color: var(--bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    animation: marquee 22s linear infinite;
+  }
+  .run {
+    display: flex;
+    gap: 34px;
+    padding-right: 34px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(20px, 2.6vw, 38px);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+</style>

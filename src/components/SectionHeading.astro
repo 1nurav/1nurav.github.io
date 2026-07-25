@@ -1,0 +1,12 @@
+---
+// Numbered eyebrow + optional title, used by every section.
+const { index, label, title } = Astro.props;
+---
+
+<div class="eyebrow" data-reveal>{index} / {label}</div>
+{title && <h2 class="title" data-reveal>{title}</h2>}
+
+<style>
+  .eyebrow { margin-bottom: 22px; }
+  .title { margin-bottom: 0; }
+</style>

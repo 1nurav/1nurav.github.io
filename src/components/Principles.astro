@@ -1,0 +1,42 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { principles } from '../data/site.js';
+---
+
+<section id="doctrine" class="section">
+  <SectionHeading index="02" label="how i lead" />
+
+  <div class="grid-auto">
+    {principles.map((item) => (
+      <article class="card" data-reveal>
+        <div class="n">{item.n}</div>
+        <h3>{item.title}</h3>
+        <p>{item.body}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .n {
+    margin-bottom: 16px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--acc);
+  }
+  h3 {
+    margin-bottom: 12px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(241, 241, 236, 0.6);
+  }
+  section :global(.eyebrow) { margin-bottom: 26px; }
+</style>

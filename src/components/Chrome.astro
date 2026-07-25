@@ -1,0 +1,93 @@
+---
+// Fixed overlays: film grain, scroll progress, custom cursor, cursor aura.
+---
+
+<div class="grain" data-grain></div>
+
+<div class="progress-track">
+  <div class="progress-fill" data-progress></div>
+</div>
+
+<div class="cursor-ring" data-cursor-ring></div>
+<div class="cursor-dot" data-cursor-dot></div>
+<div class="aura" data-aura></div>
+
+<style>
+  .grain {
+    position: fixed;
+    inset: -50%;
+    z-index: 9000;
+    pointer-events: none;
+    opacity: 0.4;
+    background-image: url('/assets/grain.svg');
+    animation: grain 1.1s steps(3) infinite;
+    mix-blend-mode: overlay;
+  }
+
+  .progress-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 9100;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: var(--acc);
+    box-shadow: 0 0 18px var(--acc);
+  }
+
+  .cursor-ring,
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+  .cursor-ring {
+    width: 42px;
+    height: 42px;
+    margin: -21px 0 0 -21px;
+    border: 1px solid var(--acc);
+    z-index: 9200;
+    mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    background: var(--acc);
+    z-index: 9201;
+  }
+
+  .aura {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 900px;
+    height: 900px;
+    margin: -450px 0 0 -450px;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(30px);
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--acc) 12%, transparent) 0%,
+      transparent 62%
+    );
+  }
+
+  /* Both cases skip the pointer loop in motion.js, so nothing ever moves these.
+     The aura in particular has no resting opacity and would sit as a static glow
+     bleeding out of the top-left corner. */
+  @media (hover: none), (prefers-reduced-motion: reduce) {
+    .cursor-ring,
+    .cursor-dot,
+    .aura { display: none; }
+  }
+</style>

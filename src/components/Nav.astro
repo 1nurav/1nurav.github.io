@@ -1,0 +1,85 @@
+---
+import { nav, profile } from '../data/site.js';
+---
+
+<nav>
+  <button type="button" class="monogram" data-accent-toggle title="go on. click it.">
+    <span class="mark">{profile.first[0]}{profile.last[0]}</span>
+    <span class="version">v1.0</span>
+  </button>
+
+  <div class="links">
+    {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    <a class="cta" href={'mailto:' + profile.email}>say hi</a>
+  </div>
+</nav>
+
+<style>
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px var(--gutter);
+    backdrop-filter: blur(14px);
+    background: linear-gradient(180deg, rgba(8, 8, 10, 0.86), rgba(8, 8, 10, 0.25));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .monogram {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .mark {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+    color: var(--acc);
+  }
+  .version {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(241, 241, 236, 0.42);
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2.4vw, 34px);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .links a { color: rgba(241, 241, 236, 0.66); }
+  .links a:hover { color: var(--acc); }
+
+  .cta {
+    padding: 9px 16px;
+    border: 1px solid var(--acc);
+    border-radius: 999px;
+    color: var(--acc);
+    transition: background 0.3s, color 0.3s;
+  }
+  .cta:hover {
+    background: var(--acc);
+    color: var(--bg);
+  }
+
+  @media (max-width: 720px) {
+    .links a:not(.cta) { display: none; }
+  }
+</style>
