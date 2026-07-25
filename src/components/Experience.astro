@@ -51,14 +51,14 @@ import { experience } from '../data/site.js';
   }
   .total .label { max-width: 16ch; }
 
-  .rows { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+  .rows { border-top: 1px solid rgb(var(--line-rgb) / 0.1); }
   .row {
     display: grid;
     grid-template-columns: minmax(140px, 0.55fr) minmax(200px, 1.4fr) minmax(150px, 0.9fr) auto;
     align-items: center;
     gap: clamp(14px, 3vw, 40px);
     padding: clamp(20px, 2.6vw, 34px) 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgb(var(--line-rgb) / 0.1);
     transition: background 0.35s, padding-left 0.35s;
   }
   .row:hover {
@@ -93,7 +93,7 @@ import { experience } from '../data/site.js';
     font-size: 10px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(241, 241, 236, 0.38);
+    color: rgb(var(--fg-rgb) / 0.38);
   }
   .duration.current { color: var(--acc); }
   .pulse {

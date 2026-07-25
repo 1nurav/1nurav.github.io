@@ -1,15 +1,24 @@
 /* ---- tokens ------------------------------------------------------------ */
 :root {
   --bg: #08080a;
-  --fg: #f1f1ec;
+
+  /* Base colours are split into channels so every alpha variant derives from a
+     single declaration: rgb(var(--fg-rgb) / 0.5) anywhere, one edit here to
+     change all of them. --acc cannot work this way because motion.js assigns it
+     whole hex values at runtime, which is why its tints use color-mix instead.
+     --line-rgb covers the white hairlines, borders, and surface washes. */
+  --fg-rgb: 241 241 236;
+  --line-rgb: 255 255 255;
+
+  --fg: rgb(var(--fg-rgb));
   --acc: #d6ff3f;
 
-  --fg-70: rgba(241, 241, 236, 0.66);
-  --fg-50: rgba(241, 241, 236, 0.45);
-  --fg-35: rgba(241, 241, 236, 0.35);
-  --line: rgba(255, 255, 255, 0.09);
-  --line-soft: rgba(255, 255, 255, 0.07);
-  --surface: rgba(255, 255, 255, 0.02);
+  --fg-70: rgb(var(--fg-rgb) / 0.66);
+  --fg-50: rgb(var(--fg-rgb) / 0.45);
+  --fg-35: rgb(var(--fg-rgb) / 0.35);
+  --line: rgb(var(--line-rgb) / 0.09);
+  --line-soft: rgb(var(--line-rgb) / 0.07);
+  --surface: rgb(var(--line-rgb) / 0.02);
 
   /* 'Variable' suffix is the Fontsource family name, not a typo. Imported in
      Base.astro; renaming these without renaming the import silently falls back. */
@@ -63,6 +72,33 @@ a:hover { color: var(--acc); }
     transition-duration: 0.001ms !important;
   }
   html { scroll-behavior: auto; }
+}
+
+/* Offscreen until focused. Sits above the grain (9000) and nav (8000) so it is
+   actually visible when a keyboard user tabs into it. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 9500;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--acc);
+  color: var(--bg);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: translateY(-200%);
+  transition: transform 0.25s var(--ease);
+}
+/* Beats the global `a:hover { color: var(--acc) }`, which would otherwise put
+   the accent on top of itself and make the label unreadable. */
+.skip-link:focus,
+.skip-link:hover {
+  color: var(--bg);
+}
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 /* ---- shared building blocks -------------------------------------------- */
@@ -131,7 +167,7 @@ a:hover { color: var(--acc); }
   border-radius: 4px;
   background-image: repeating-linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.06) 0 8px,
+    rgb(var(--line-rgb) / 0.06) 0 8px,
     transparent 8px 16px
   );
 }
