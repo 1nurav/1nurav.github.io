@@ -20,6 +20,8 @@ import { profile, stats } from '../data/site.js';
       ))}
     </div>
 
+    {/* loading/decoding explicit rather than inherited from Astro's default: this is
+        the largest asset on the page and it sits below the fold. */}
     <figure class="photo" data-reveal>
       <Image
         src={profile.photo.src}
@@ -29,6 +31,8 @@ import { profile, stats } from '../data/site.js';
         format="webp"
         quality={75}
         style={'object-position:' + profile.photo.position}
+        loading="lazy"
+        decoding="async"
       />
       <figcaption>
         <span>the guy in question</span>
