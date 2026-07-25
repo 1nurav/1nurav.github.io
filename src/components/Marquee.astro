@@ -3,12 +3,21 @@ import { marquee } from '../data/site.js';
 
 // Track is duplicated so the -50% translate loops seamlessly.
 const track = [...marquee, ...marquee];
+
+// Scroll speed, not scroll duration, is the thing to hold steady: the -50%
+// translate covers exactly one copy of the list, so a fixed duration makes
+// longer copy race past. Character count stands in for rendered width, which is
+// rough with a proportional face but close enough at this size. The ratio is
+// anchored to the original list: 73 units took 22s, so that is the reference
+// speed. Edit `marquee` freely and the timing follows.
+const units = marquee.join('').length + marquee.length;
+const duration = Math.round((units / 73) * 22);
 ---
 
 {/* Decorative. The list is duplicated for the loop and padded with asterisks, so
-    a screen reader would otherwise read "team lead, star, unblocker of blockers,
-    star..." and then the whole thing a second time. */}
-<div class="strip" aria-hidden="true">
+    a screen reader would otherwise read "estimates are fiction, star, no deploys
+    on friday, star..." and then the whole thing a second time. */}
+<div class="strip" aria-hidden="true" style={'--marquee-duration:' + duration + 's'}>
   <div class="track">
     <span class="run">
       {track.map((word) => (
@@ -35,7 +44,7 @@ const track = [...marquee, ...marquee];
   .track {
     display: flex;
     width: max-content;
-    animation: marquee 22s linear infinite;
+    animation: marquee var(--marquee-duration, 22s) linear infinite;
   }
   .run {
     display: flex;

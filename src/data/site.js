@@ -46,17 +46,19 @@ export const nav = [
 ];
 
 export const marquee = [
-  'team lead',
-  'unblocker of blockers',
-  'architecture reviews',
-  'ships things',
-  '1nurav',
+  'estimates are fiction',
+  'no deploys on friday',
+  'let\'s take this offline',
+  'it worked in staging',
+  'who owns this service',
+  'two weeks, probably',
+  'lgtm',
 ];
 
 export const stats = [
   { value: '7', label: 'years building software', accent: true },
   { value: '4', label: 'companies, one craft' },
-  { value: 'Team Lead', label: 'currently at SpeakUp', small: true },
+  { value: 'SpeakUp', label: 'where I am now', small: true },
   { value: '0', label: 'deploys on friday' },
 ];
 
