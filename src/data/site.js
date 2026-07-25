@@ -25,10 +25,10 @@ export const profile = {
     'Good engineers don\'t need managing. They need the meeting cancelled, the decision made, and someone to go argue with the other team. That part I can do.',
   bio: [
     'Seven years in, four companies deep. I started at GlobalLogic in 2019 writing code that worked, then code that worked at 2am, then eventually not much code at all. The interesting problems turned out to be people, design decisions, and the distance between the two.',
-    'Now I lead eleven engineers at SpeakUp. Day to day: unsticking people, reading design docs slowly enough to catch the part everyone skimmed, and making sure the good work gets credited to whoever actually did it.',
-    'I still read every one of those docs line by line. Cheapest bug fix there is, and nobody gets paged for it.',
+    'Now I lead eleven engineers at SpeakUp. Day to day: unsticking people, asking the question everyone hoped nobody would ask, and making sure the good work gets credited to whoever actually did it.',
+    'I still read every design doc line by line. It is the least glamorous way to catch a bug, and the only one that never wakes anybody up.',
   ],
-  headline: 'I lead engineers, clear their path, and argue with the architecture while it\'s still just a diagram.',
+  headline: 'Nobody tells you that leading engineers is mostly a reading job. Docs, diffs, and the room.',
   photo: { src: photo, alt: 'Varun Babu', position: '42% 34%' },
 };
 
@@ -84,9 +84,12 @@ export const principles = [
 ];
 
 // Newest first. `current: true` renders the live dot instead of a duration.
+// `logo` is optional: omit it and the row is just the company name. Exact
+// start and end days live in the facts, not here; the rows show months.
 export const experience = [
   {
     company: 'SpeakUp',
+    logo: '/assets/logos/speakup.svg',
     period: 'Mar 2026 — now',
     duration: 'present',
     current: true,
@@ -94,19 +97,22 @@ export const experience = [
   },
   {
     company: 'Navex',
-    period: '9 Apr 2025 — 6 Mar 2026',
+    logo: '/assets/logos/navex.svg',
+    period: 'Apr 2025 — Mar 2026',
     duration: '11 mos',
     note: 'Short stint, long list of lessons.',
   },
   {
     company: 'PeopleInTouch',
-    period: 'Feb 2023 — 31 Mar 2025',
+    logo: '/assets/logos/peopleintouch.png',
+    period: 'Feb 2023 — Mar 2025',
     duration: '2 yrs 2 mos',
     note: 'Two years of shipping and stakeholder diplomacy.',
   },
   {
     company: 'GlobalLogic',
-    period: '15 Jul 2019 — 3 Feb 2023',
+    logo: '/assets/logos/globallogic.png',
+    period: 'Jul 2019 — Feb 2023',
     duration: '3 yrs 7 mos',
     note: 'Where it started. Learned more from code review than from any course.',
   },

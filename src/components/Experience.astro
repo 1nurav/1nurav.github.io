@@ -8,7 +8,7 @@ import { experience } from '../data/site.js';
     <SectionHeading index="03" label="experience" title="Seven years, four logos" />
     <div class="total" data-reveal>
       <span class="figure">7</span>
-      <span class="label">years since 15 jul 2019</span>
+      <span class="label">years since jul 2019</span>
     </div>
   </div>
 
@@ -16,7 +16,12 @@ import { experience } from '../data/site.js';
     {experience.map((job) => (
       <div class="row" data-reveal>
         <div class="period">{job.period}</div>
-        <h3>{job.company}</h3>
+        <div class="company">
+          {/* alt="" on purpose: the company name sits right beside it in the h3,
+              so announcing the mark too would just read the name twice. */}
+          {job.logo && <img class="logo" src={job.logo} alt="" loading="lazy" decoding="async" />}
+          <h3>{job.company}</h3>
+        </div>
         <div class="note">{job.note}</div>
         <div class:list={['duration', { current: job.current }]}>
           {job.current && <span class="pulse"></span>}
@@ -73,6 +78,23 @@ import { experience } from '../data/site.js';
     text-transform: uppercase;
     color: var(--fg-50);
   }
+  .company {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 18px);
+  }
+  /* Four brand palettes would fight each other and the accent, so every mark is
+     flattened to flat white and reads as one set. Height is capped rather than
+     width because the marks range from a square glyph to a 4.4:1 wordmark. */
+  .logo {
+    height: clamp(18px, 2vw, 26px);
+    width: auto;
+    max-width: 92px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.82;
+  }
+
   h3 {
     font-family: var(--display);
     font-weight: 700;
@@ -109,7 +131,8 @@ import { experience } from '../data/site.js';
       grid-template-columns: 1fr auto;
       row-gap: 8px;
     }
-    h3 { grid-column: 1 / -1; }
+    /* .company now wraps the h3, so it is the grid child that has to span. */
+    .company { grid-column: 1 / -1; }
     .note { grid-column: 1 / -1; }
   }
 </style>
