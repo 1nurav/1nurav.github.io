@@ -6,7 +6,14 @@ const year = new Date().getFullYear();
 <footer>
   <span>&#169; {year} {profile.first} {profile.last}</span>
   <span>hand-built, no templates, mild sleep deprivation</span>
-  <span data-egg>press "v" if you're bored</span>
+    {/* Same joke, told correctly for the input device: a phone has no V to press,
+        though the monogram is tappable either way. Swapped in CSS, not JS, so it
+        reads right with JS off, and data-egg stays on the wrapper so the accent
+        cycle still overwrites the whole line. */}
+    <span data-egg>
+      <span class="egg-key">press "v" if you're bored</span>
+      <span class="egg-tap">tap the VB if you're bored</span>
+    </span>
 </footer>
 
 <style>
@@ -24,5 +31,10 @@ const year = new Date().getFullYear();
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: rgb(var(--fg-rgb) / 0.38);
+  }
+  .egg-tap { display: none; }
+  @media (hover: none) {
+    .egg-key { display: none; }
+    .egg-tap { display: inline; }
   }
 </style>
