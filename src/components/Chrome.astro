@@ -50,13 +50,27 @@
       <circle cx="55" cy="32" r="16.2"/>
       <circle cx="235" cy="32" r="16.2"/>
     </g>
-    <g class="rim">
-      <circle cx="55" cy="32" r="8.4"/>
-      <circle cx="235" cy="32" r="8.4"/>
+    <g class="wheel" data-wheel="rear">
+      <circle class="rim" cx="55" cy="32" r="8.4"/>
+      <path class="spoke" d="M55 32 L62.4 32.0"/>
+      <path class="spoke" d="M55 32 L57.29 39.04"/>
+      <path class="spoke" d="M55 32 L49.01 36.35"/>
+      <path class="spoke" d="M55 32 L49.01 27.65"/>
+      <path class="spoke" d="M55 32 L57.29 24.96"/>
+      <path class="tick" d="M65.81 35.93 L69.28 37.2"/>
+      <path class="tick" d="M44.19 28.07 L40.72 26.8"/>
+      <circle class="hub" cx="55" cy="32" r="3.2"/>
     </g>
-    <g class="hub">
-      <circle cx="55" cy="32" r="3.2"/>
-      <circle cx="235" cy="32" r="3.2"/>
+    <g class="wheel" data-wheel="front">
+      <circle class="rim" cx="235" cy="32" r="8.4"/>
+      <path class="spoke" d="M235 32 L242.4 32.0"/>
+      <path class="spoke" d="M235 32 L237.29 39.04"/>
+      <path class="spoke" d="M235 32 L229.01 36.35"/>
+      <path class="spoke" d="M235 32 L229.01 27.65"/>
+      <path class="spoke" d="M235 32 L237.29 24.96"/>
+      <path class="tick" d="M245.81 35.93 L249.28 37.2"/>
+      <path class="tick" d="M224.19 28.07 L220.72 26.8"/>
+      <circle class="hub" cx="235" cy="32" r="3.2"/>
     </g>
   </svg>
 </div>
@@ -155,6 +169,10 @@
   .car .sidewall { fill: none; stroke: #ffc907; stroke-width: 1.7; }
   .car .rim { fill: #56566a; }
   .car .hub { fill: #15151b; }
+  .car .spoke { stroke: #8d8da0; stroke-width: 1.5; }
+  /* The rim is barely two pixels across at strip size, so spokes alone would spin
+     invisibly. These ticks sit out on the carcass where there is room to see them. */
+  .car .tick { stroke: #ffc907; stroke-width: 2; stroke-linecap: round; }
   .car .halo {
     fill: none;
     stroke: #e8e8e2;

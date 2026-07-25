@@ -147,7 +147,9 @@ function startSectorTiming() {
   if (!track) return null;
 
   const car = $('[data-car]');
+  const wheels = car ? Array.from(car.querySelectorAll('[data-wheel]')) : [];
   let carSpan = 0;
+  let rollPerPx = 0;
 
   const cells = Array.from(track.querySelectorAll('.sector')).map((el) => ({
     el,
@@ -167,7 +169,16 @@ function startSectorTiming() {
     maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     // Cached: the car's travel is the viewport less its own width, so the nose
     // lands exactly on the right edge at the end of the lap.
-    if (car) carSpan = Math.max(0, window.innerWidth - car.offsetWidth);
+    if (car) {
+      carSpan = Math.max(0, window.innerWidth - car.offsetWidth);
+      /* Degrees of wheel rotation per pixel the car travels, so the tyres roll
+         rather than spin: the wheel is r18 in a 280-wide viewBox, so its rendered
+         radius scales with the rendered car, and one circumference of travel is
+         exactly one revolution. Tie this to scroll distance instead and the wheels
+         spin faster than the car moves, which reads as wheelspin. */
+      const r = 18 * (car.offsetWidth / 280);
+      rollPerPx = r > 0 ? 360 / (2 * Math.PI * r) : 0;
+    }
   };
 
   /* Ranked against each other rather than against a fixed threshold, so the strip
@@ -196,7 +207,15 @@ function startSectorTiming() {
       cells[i].fill.style.width = Math.max(0, Math.min(1, scaled - i)) * 100 + '%';
     }
 
-    if (car) car.style.transform = 'translate3d(' + p * carSpan + 'px,0,0)';
+    if (car) {
+      const x = p * carSpan;
+      car.style.transform = 'translate3d(' + x + 'px,0,0)';
+      const deg = x * rollPerPx;
+      for (const w of wheels) {
+        const cx = w.getAttribute('data-wheel') === 'rear' ? 55 : 235;
+        w.setAttribute('transform', 'rotate(' + deg.toFixed(2) + ' ' + cx + ' 32)');
+      }
+    }
 
     const idx = Math.min(SECTORS - 1, Math.floor(scaled));
     if (idx !== current) {

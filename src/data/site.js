@@ -32,14 +32,15 @@ export const profile = {
   photo: { src: photo, alt: 'Varun Babu', position: '42% 34%' },
 };
 
+// The pills render  as a glyph, so  is no longer drawn: it becomes the
+// accessible name instead, which is why it still reads as a full phrase.
 export const links = [
-  { label: 'X / @1nurav', href: 'https://x.com/1nurav' },
-  { label: 'GitHub / @1nurav', href: 'https://github.com/1nurav' },
-  { label: 'LinkedIn / @1nurav', href: 'https://linkedin.com/in/1nurav' },
-  { label: 'Instagram / @1nurav', href: 'https://instagram.com/1nurav' },
-  // Labelled for what it does, not what it is: the big address above copies
-  // to the clipboard, so this pill is the one that opens a mail client.
-  { label: 'mail app', href: 'mailto:varunnaidu307@gmail.com' },
+  { icon: 'x', label: 'X, @1nurav', href: 'https://x.com/1nurav' },
+  { icon: 'github', label: 'GitHub, @1nurav', href: 'https://github.com/1nurav' },
+  { icon: 'linkedin', label: 'LinkedIn, @1nurav', href: 'https://linkedin.com/in/1nurav' },
+  { icon: 'instagram', label: 'Instagram, @1nurav', href: 'https://instagram.com/1nurav' },
+  // The big address above copies to the clipboard, so this one opens a mail client.
+  { icon: 'mail', label: 'Open in mail app', href: 'mailto:varunnaidu307@gmail.com' },
 ];
 
 export const nav = [
