@@ -5,7 +5,10 @@ import { marquee } from '../data/site.js';
 const track = [...marquee, ...marquee];
 ---
 
-<div class="strip">
+{/* Decorative. The list is duplicated for the loop and padded with asterisks, so
+    a screen reader would otherwise read "team lead, star, unblocker of blockers,
+    star..." and then the whole thing a second time. */}
+<div class="strip" aria-hidden="true">
   <div class="track">
     <span class="run">
       {track.map((word) => (
@@ -26,8 +29,8 @@ const track = [...marquee, ...marquee];
     padding: 16px 0;
     background: var(--acc);
     color: var(--bg);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgb(var(--line-rgb) / 0.08);
+    border-bottom: 1px solid rgb(var(--line-rgb) / 0.08);
   }
   .track {
     display: flex;

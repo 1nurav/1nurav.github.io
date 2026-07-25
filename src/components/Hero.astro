@@ -37,7 +37,11 @@ const outline = profile.last.split('');
   header {
     position: relative;
     z-index: 2;
+    /* svh is the viewport with mobile browser chrome *showing*. Plain vh measures
+       it with the URL bar collapsed, so the hero overflowed on load and the page
+       shifted as the bar hid. vh first as the fallback for anything without svh. */
     min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -52,9 +56,9 @@ const outline = profile.last.split('');
     font-size: 11px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: rgba(241, 241, 236, 0.5);
+    color: rgb(var(--fg-rgb) / 0.5);
   }
-  .sep { color: rgba(241, 241, 236, 0.24); }
+  .sep { color: rgb(var(--fg-rgb) / 0.24); }
   .pulse {
     width: 8px;
     height: 8px;
@@ -112,13 +116,13 @@ const outline = profile.last.split('');
     font-size: 11px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: rgba(241, 241, 236, 0.42);
+    color: rgb(var(--fg-rgb) / 0.42);
   }
   .spinner {
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    border: 1px solid rgba(241, 241, 236, 0.2);
+    border: 1px solid rgb(var(--fg-rgb) / 0.2);
     border-top-color: var(--acc);
     animation: spin 2.6s linear infinite;
   }
