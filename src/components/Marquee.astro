@@ -35,12 +35,34 @@ const duration = Math.round((units / 73) * 22);
     position: relative;
     z-index: 2;
     overflow: hidden;
-    padding: 16px 0;
+    padding: 20px 0;
     background: var(--acc);
     color: var(--bg);
-    border-top: 1px solid rgb(var(--line-rgb) / 0.08);
-    border-bottom: 1px solid rgb(var(--line-rgb) / 0.08);
   }
+  /* Kerbs. The accent band stays, since it is what breaks up a very dark page, and
+     the track read comes from the edges instead: slanted red and white striping, top
+     and bottom, exactly where a kerb sits either side of a circuit. Angled at 115deg
+     because real kerbs are cut on a diagonal, not square.
+
+     Signal colours, so they hold still while --acc cycles: kerbs are not team livery.
+     A whole rule block, and the 1px borders it replaces are removed below. */
+  .strip::before,
+  .strip::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    z-index: 1;
+    background: repeating-linear-gradient(
+      115deg,
+      #e10600 0 13px,
+      #f1f1ec 13px 26px
+    );
+  }
+  .strip::before { top: 0; }
+  .strip::after { bottom: 0; }
+
   .track {
     display: flex;
     width: max-content;
