@@ -146,6 +146,9 @@ function startSectorTiming() {
   const track = $('[data-sectors]');
   if (!track) return null;
 
+  const car = $('[data-car]');
+  let carSpan = 0;
+
   const cells = Array.from(track.querySelectorAll('.sector')).map((el) => ({
     el,
     fill: el.querySelector('.sector-fill'),
@@ -163,6 +166,9 @@ function startSectorTiming() {
 
   const layout = () => {
     maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    // Cached: the car's travel is the viewport less its own width, so the nose
+    // lands exactly on the right edge at the end of the lap.
+    if (car) carSpan = Math.max(0, window.innerWidth - car.offsetWidth);
   };
 
   /* Re-sorted on every completed sector, which is what makes the strip feel live:
@@ -195,6 +201,8 @@ function startSectorTiming() {
     for (let i = 0; i < SECTORS; i++) {
       cells[i].fill.style.width = Math.max(0, Math.min(1, scaled - i)) * 100 + '%';
     }
+
+    if (car) car.style.transform = 'translate3d(' + p * carSpan + 'px,0,0)';
 
     const idx = Math.min(SECTORS - 1, Math.floor(scaled));
     if (idx !== current) {

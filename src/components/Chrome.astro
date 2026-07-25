@@ -14,6 +14,45 @@
   <div class="sector"><div class="sector-fill"></div></div>
 </div>
 
+{/* Original drawing, not traced art: built to the RB19's published dimensions,
+    5600mm long by 970mm tall on a 3600mm wheelbase with 720mm wheels, which is where
+    the 280x52 viewBox and the 5.6:1 proportion come from. Team colours, but none of
+    their artwork: no bull, no sponsor marks, no numbers.
+    It rides the leading edge of the timing strip, so you drive the lap as you read. */}
+<div class="car" data-car aria-hidden="true">
+  <svg viewBox="0 0 280 52" fill="none">
+    <g class="shell">
+      <path d="M46 46 L240 46 L258 42 Q272 39 267 35 L205 25 L172 21 L138 20 L128 11 L118 11 C100 15 70 21 50 25 L46 30 Z"/>
+      <path d="M4 2 h44 v6 H4 z"/>
+      <path d="M4 2 h7 v26 H4 z"/>
+      <path d="M42 6 h13 v23 H42 z"/>
+      <path d="M16 31 h34 v5 H16 z"/>
+      <path d="M238 40 h39 v4 h-39 z"/>
+      <path d="M248 45 h29 v3 h-29 z"/>
+      <path d="M269 32 h8 v16 h-8 z"/>
+    </g>
+    <g class="flash-y">
+      <path d="M200 24 L205 25 L267 35 Q272 39 258 42 L240 46 L200 46 Z"/>
+    </g>
+    <g class="flash-r">
+      <path d="M118 11 L128 11 L133 19 L112 17 Z"/>
+      <path d="M138 20 L172 21 L168 26 L136 25 Z"/>
+    </g>
+    <g class="halo">
+      <path d="M136 19 C141 10 168 9 174 19"/>
+      <path d="M180 23 L176 15"/>
+    </g>
+    <g class="tyre">
+      <circle cx="55" cy="32" r="18"/>
+      <circle cx="235" cy="32" r="18"/>
+    </g>
+    <g class="hub">
+      <circle cx="55" cy="32" r="7.5"/>
+      <circle cx="235" cy="32" r="7.5"/>
+    </g>
+  </svg>
+</div>
+
 <div class="cursor-ring" data-cursor-ring></div>
 <div class="cursor-dot" data-cursor-dot></div>
 <div class="aura" data-aura></div>
@@ -76,6 +115,41 @@
   .sector.t-best .sector-fill {
     background: #b14ff5;
     box-shadow: 0 0 16px rgb(177 79 245 / 0.6);
+  }
+
+  /* Sits just under the strip with its wheels on it. translate3d only, so moving
+     it is a compositor job and never touches layout. */
+  .car {
+    position: fixed;
+    top: 3px;
+    left: 0;
+    z-index: 9099;
+    width: 76px;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .car svg { display: block; width: 100%; height: auto; }
+  /* Red Bull's own palette, and the one place on the site with hardcoded colour
+     that is not a signal: a navy car in acid green would not be the RB19. The navy
+     is lifted from the team's #121F45 to #1B2C63, because #121F45 against --bg
+     measures about 1.3:1 and the car simply disappears. The yellow nose and the
+     red flashes are what actually make it readable at 14px. No livery graphics and
+     no sponsor marks: the palette is fair game, their artwork is not. */
+  .car .shell { fill: #1b2c63; }
+  .car .flash-y { fill: #ffc907; }
+  .car .flash-r { fill: #da291c; }
+  .car .tyre { fill: #e8e8e2; }
+  .car .hub { fill: var(--bg); }
+  .car .halo {
+    fill: none;
+    stroke: #ffc907;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+  }
+  /* Nothing drives it when the motion loop is off, so it would sit parked at the
+     far left of every page forever. */
+  @media (prefers-reduced-motion: reduce) {
+    .car { display: none; }
   }
 
   .cursor-ring,
