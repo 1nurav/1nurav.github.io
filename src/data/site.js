@@ -34,15 +34,17 @@ export const profile = {
 
 export const links = [
   { label: 'X / @1nurav', href: 'https://x.com/1nurav' },
+  { label: 'GitHub / @1nurav', href: 'https://github.com/1nurav' },
   { label: 'Instagram / @1nurav', href: 'https://instagram.com/1nurav' },
-  { label: 'Email', href: 'mailto:varunnaidu307@gmail.com' },
+  // Labelled for what it does, not what it is: the big address above copies
+  // to the clipboard, so this pill is the one that opens a mail client.
+  { label: 'mail app', href: 'mailto:varunnaidu307@gmail.com' },
 ];
 
 export const nav = [
   { label: 'about', href: '#about' },
   { label: 'how i lead', href: '#doctrine' },
   { label: 'experience', href: '#experience' },
-  { label: 'work', href: '#work' },
 ];
 
 export const marquee = [
@@ -115,24 +117,5 @@ export const experience = [
     period: 'Jul 2019 — Feb 2023',
     duration: '3 yrs 7 mos',
     note: 'Where it started. Learned more from code review than from any course.',
-  },
-];
-
-// Add `image: '/assets/whatever.jpg'` to swap the striped placeholder for a real shot.
-export const projects = [
-  {
-    title: 'Project One',
-    year: '20XX',
-    body: 'One witty line about what it did and who it saved. Classified until further notice.',
-  },
-  {
-    title: 'Project Two',
-    year: '20XX',
-    body: 'The one where the deadline moved twice and it still shipped. Details incoming.',
-  },
-  {
-    title: 'Project Three',
-    year: '20XX',
-    body: 'Small idea, suspiciously large impact. Write-up pending your notes.',
   },
 ];

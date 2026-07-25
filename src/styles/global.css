@@ -161,19 +161,6 @@ a:hover { color: var(--acc); }
   gap: 18px;
 }
 
-/* Striped stand-in for imagery that has not been supplied yet. */
-.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgb(var(--line-rgb) / 0.06) 0 8px,
-    transparent 8px 16px
-  );
-}
-
 [data-reveal] {
   transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
 }

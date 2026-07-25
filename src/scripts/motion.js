@@ -87,6 +87,52 @@ function startAccentCycling() {
   });
 }
 
+/* mailto is unreliable — plenty of visitors have no mail client wired up, so the
+   big address copies instead. The href stays a real mailto, so right-click,
+   middle-click and the no-JS path all still behave. */
+function startCopyEmail() {
+  const link = $('[data-copy-email]');
+  const note = $('[data-copy-note]');
+  if (!link) return;
+  const original = note ? note.textContent : '';
+  let timer;
+
+  const confirm = () => {
+    if (!note) return;
+    note.textContent = 'copied. go write something nice';
+    note.classList.add('copied');
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      note.textContent = original;
+      note.classList.remove('copied');
+    }, 2200);
+  };
+
+  // execCommand fallback for insecure origins, where navigator.clipboard is absent.
+  const legacy = (addr) => {
+    const ta = document.createElement('textarea');
+    ta.value = addr;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {}
+    ta.remove();
+    confirm();
+  };
+
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const addr = link.getAttribute('data-copy-email');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(addr).then(confirm, () => legacy(addr));
+    } else {
+      legacy(addr);
+    }
+  });
+}
+
 function startPointerMotion() {
   const ring = $('[data-cursor-ring]');
   const dot = $('[data-cursor-dot]');
@@ -244,6 +290,8 @@ export function init() {
 
   startClock();
   startAccentCycling();
+  // Not motion, so it runs regardless of the reduced-motion preference.
+  startCopyEmail();
   // Skipped when reduced, so nothing is ever left hidden waiting on a reveal.
   if (!reduced) startReveals();
   if (!reduced && window.matchMedia('(hover: hover)').matches) startPointerMotion();

@@ -4,9 +4,12 @@ import { links, profile } from '../data/site.js';
 ---
 
 <section id="contact" class="section">
-  <SectionHeading index="05" label="contact" />
+  <SectionHeading index="04" label="contact" />
 
-  <a class="email" href={'mailto:' + profile.email} data-reveal>{profile.email}</a>
+  {/* The href stays a real mailto so right-click, middle-click and no-JS all
+      still work. motion.js intercepts the plain click and copies instead. */}
+  <a class="email" href={'mailto:' + profile.email} data-copy-email={profile.email} data-reveal>{profile.email}</a>
+  <div class="copy-note" data-copy-note data-reveal>click it, copies to clipboard</div>
 
   <div class="pills">
     {links.map((link) => (
@@ -40,6 +43,15 @@ import { links, profile } from '../data/site.js';
     word-break: break-word;
   }
   .email:hover { color: var(--acc); }
+
+  .copy-note {
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-50);
+  }
+  .copy-note.copied { color: var(--acc); }
 
   .pills {
     display: flex;
